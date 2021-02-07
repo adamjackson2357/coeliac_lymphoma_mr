@@ -1,0 +1,47 @@
+---
+
+#### Disease Codes ####
+
+# list of icd9 disease codes that we want use for our cases
+icd9:
+  - "C189"
+  
+# list of icd10 disease codes that we want use for our cases
+icd10:
+  - "C189"
+
+#### Provided Filenames ####
+
+# Set the covariates filename
+covariates_fname: "../data/ukb26390.csv"
+
+# biomarkers filename
+biomarkers_fname: "../data/ukb27725.csv"
+
+# Set the filename for the withdrawn participants
+withdrawn_fname: "../data/w19266_20200204.csv"
+
+# hospital episode statistics fname
+hes_fname: "../data/hesin_diag.txt"
+
+# biomarkers annotation filename
+annotation_fname: "../data/Biomarker_annotation.xlsx"
+
+# category codes from the codings showcase
+category_codes_fname: "../data/Codings_Showcase.csv"
+
+# data dictionary
+data_dict_fname: "../data/data_dictionary.csv"
+
+#### Output Filnames ####
+
+# output filename after covariate extraction
+covariates_output: "../data/covariates.rds"
+
+# output filname after cases extraction
+cases_output: "../data/cases.rds"
+
+#### Configs ####
+
+# Set the filename for the list of field ids
+fields_fname: "../configs/field_ids.txt"

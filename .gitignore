@@ -1,0 +1,7 @@
+# List out files and directories that you don't want to load to git
+*.txt
+*.csv
+*.xlsx
+*.png
+*.log
+*.rds
