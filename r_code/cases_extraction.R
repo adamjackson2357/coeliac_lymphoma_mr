@@ -19,7 +19,9 @@ config <- read_yaml('../configs/main.yml')
 codes <- config$icd10
 
 # pull in the covariates data for participants with cancer
-covariates <- get_covariates(config$covariates_fname, config$withdrawn_fname, fields = 40006)
+covariates <- get_covariates(config$covariates_fname,
+                             config$withdrawn_fname,
+                             fields = 40006)
 
 # get the cases
 cases <- get_cases(covariates, codes)
