@@ -2,13 +2,27 @@
 
 #### Disease Codes ####
 
-# list of icd9 disease codes that we want use for our cases
-icd9:
-  - "C189"
-  
 # list of icd10 disease codes that we want use for our cases
 icd10:
-  - "C189"
+  - "C820"
+  - "C821"
+  - "C822"
+  - "C827"
+  - "C829"
+  - "C830"
+  - "C831"
+  - "C832"
+  - "C833"
+  - "C834"
+  - "C835"
+  - "C837"
+  - "C838"
+  - "C839"
+  - "C850"
+  - "C851"
+  - "C857"
+  - "C859"
+  - "C862"
 
 #### Provided Filenames ####
 
