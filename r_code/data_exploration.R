@@ -31,6 +31,18 @@ case_covariates <- cases %>%
   left_join(biomarkers, by="eid")
 dim(case_covariates)
 
+
+# get the time of first diagnosis
+cases <- cases %>%
+  arrange(eid, time_point, value) %>%
+  group_by(eid) %>%
+  mutate(first_diagnosis = first(time_point)) %>%
+  ungroup()
+
+
+head(cases, 10)
+dim(cases)
+
 # get gender counts and proportions
 case_covariates %>%
   group_by(sex=X31.0.0) %>%
