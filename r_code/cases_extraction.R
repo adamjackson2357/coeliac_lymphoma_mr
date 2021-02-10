@@ -1,27 +1,28 @@
 # Code to extract case eids for a given ICD10 code
 
+# Clear variables and set the path
+# dev.off()
+# rm(list=ls())
+# path=dirname(rstudioapi::getActiveDocumentContext()$path)
+# setwd(path)
+
 # import libraries
 library(data.table)
 library(tidyverse)
 library(yaml)
+source("extraction.R")
 
 # read in the config
 config <- read_yaml('../configs/main.yml')
 
 # Define disease codes
-codes <- config$codes
+codes <- config$icd10
 
-# get the hospital statistics data
-hes=data.frame(fread(config$hes_fname))
+# pull in the covariates data for participants with cancer
+covariates <- get_covariates(config$covariates_fname, config$withdrawn_fname, fields = 40006)
 
-# remove participants which have withdrawn
-withdrawn=read.csv(config$withdrawn_fname)[,1]
-hes <- subset(hes, !(eid %in% withdrawn))
-
-# get unique eids back for a given disease code
-cases <- hes %>%
-  filter(diag_icd10 %in% codes) %>%
-  distinct(eid)
+# get the cases
+cases <- get_cases(covariates, codes)
 
 # save the cases
 saveRDS(cases, config$cases_output)
