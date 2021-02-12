@@ -24,6 +24,10 @@ icd10:
   - "C859"
   - "C862"
 
+# list of icd10 codes for the risk factors
+risk_factors:
+  - "K900"
+
 #### Provided Filenames ####
 
 # Set the covariates filename
@@ -58,8 +62,11 @@ snp_fname: "../data/genetic_data_lung_cancer_snps.rds"
 # output filename after covariate extraction
 covariates_output: "../data/covariates.rds"
 
-# output filname after cases extraction
+# output filename after cases extraction
 cases_output: "../data/cases.rds"
+
+# output filename for risk factor extraction
+risk_factor_output: "../data/risk_factor_cases.rds"
 
 #### Configs ####
 
