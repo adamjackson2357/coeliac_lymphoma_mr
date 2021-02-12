@@ -60,30 +60,36 @@ get_covariates <- function(covariates_fname, withdrawn_fname, fields) {
 }
 
 
-#' Extract the cases from the covariates dataframe
+#' Extract the cases from the hes datasets
 #' 
 #' Filters the covariates dataframe for a set of icd10 codes and melts it to
 #' a long dataframe. Then extracts the time points as a new columns
 #' 
-#' @param covariates_fname filename for all the covariates
+#' @param hes_diag_fname hes fname
+#' @param hes_fname hes fname with date of diagnosis
 #' @param withdrawn_fname filename for withdrawn participants
-#' @param fields list of the column ids
+#' @param codes list of icd10 disease codes
 #' @return Covariates dataframe
-get_cases <- function(covariates, codes){
+get_cases <- function(hes_diag_fname, hes_fname, withdrawn_fname, codes){
   
-  # filter all the covariates to only people who have had hodgkins lymphoma
-  cases <- covariates %>% filter_all(any_vars(. %in% codes))
+  # get the hes_diag data
+  hes_diag <- data.frame(fread(hes_diag_fname,
+                               select = c("eid", "ins_index", "diag_icd10")))
   
-  # melt the dataframe: basically an unpivot
-  measure_cols <- names(cases)[-1]
-  cases <- melt(data = as.data.table(cases), id.vars = "eid", measure.vars = measure_cols)
-  cases <- drop_na(cases)
+  # filter on cases
+  hes_diag <- subset(hes_diag, diag_icd10 %in% codes)
   
-  # add the time point in
-  # the character between the two decimal places in the variable column
-  cases <- cases %>%
-    mutate(time_point = as.numeric(gsub(".*\\.(.+)\\..*", "\\1", variable))) %>%
-    arrange(eid, time_point, value)
+  # remove participants which have withdrawn
+  withdrawn=read.csv(withdrawn_fname)[,1]
+  hes_diag <- subset(hes_diag, !(eid %in% withdrawn))
+  
+  # get the hes data
+  hes <- data.frame(fread(hes_fname,
+                          select = c("eid", "ins_index", "epistart", "epiend")))
+  
+  # inner join
+  cases <- hes_diag %>%
+    inner_join(hes, by = c("eid", "ins_index"))
   
   return(cases)
 }

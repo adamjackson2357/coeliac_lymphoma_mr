@@ -36,7 +36,10 @@ biomarkers_fname: "../data/ukb27725.csv"
 withdrawn_fname: "../data/w19266_20200204.csv"
 
 # hospital episode statistics fname
-hes_fname: "../data/hesin_diag.txt"
+hes_diag_fname: "../data/hesin_diag.txt"
+
+# hospital episode statistics fname
+hes_fname: "../data/hesin.txt"
 
 # biomarkers annotation filename
 annotation_fname: "../data/Biomarker_annotation.xlsx"
@@ -46,6 +49,9 @@ category_codes_fname: "../data/Codings_Showcase.csv"
 
 # data dictionary
 data_dict_fname: "../data/data_dictionary.csv"
+
+# snp data
+snp_fname: "../data/genetic_data_lung_cancer_snps.rds"
 
 #### Output Filnames ####
 
