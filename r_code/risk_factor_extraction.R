@@ -16,7 +16,6 @@ config <- read_yaml('../configs/main.yml')
 
 # Define disease codes
 codes <- config$risk_factors
-codes
 
 # get the cases
 cases <- get_cases(config$hes_diag_fname, config$hes_fname, config$withdrawn_fname, codes)
