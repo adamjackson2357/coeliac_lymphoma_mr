@@ -44,11 +44,9 @@ get_first_diag <- function(df) {
 
 #### Join the coeliacs, cases and controls ####
 
-# get coeliacs first time of diagnosis
-coeliacs <- get_cases(hes_diag_fname, hes_fname, withdrawn_fname, risk_factors)
-coeliacs <- get_first_diag(coeliacs)
-coeliacs$coeliac <- 1
-coeliacs <- unique(coeliacs[, c("eid", "coeliac", "diag")])
+# get the covariates
+fields <- unname(unlist(read.table(fields_fname, header=FALSE)))
+covariates <- get_covariates(covariates_fname, withdrawn_fname, fields)
 
 # get cases first time of diagnosis
 cases <- get_cases(hes_diag_fname, hes_fname, withdrawn_fname, codes)
@@ -56,21 +54,19 @@ cases <- get_first_diag(cases)
 cases$case <- 1
 cases <- unique(cases[, c("eid", "case", "diag")])
 
-# outer join coeliacs and cases
-coeliacs_cases <- coeliacs %>%
-  full_join(cases, by="eid", suffix=c("_coeliac", "_case"))
-
-# get the covariates
-fields <- unname(unlist(read.table(fields_fname, header=FALSE)))
-fields
-covariates <- get_covariates(covariates_fname, withdrawn_fname, fields)
+# get coeliacs first time of diagnosis
+coeliacs <- get_cases(hes_diag_fname, hes_fname, withdrawn_fname, risk_factors)
+coeliacs <- get_first_diag(coeliacs)
+coeliacs$coeliac <- 1
+coeliacs <- unique(coeliacs[, c("eid", "coeliac", "diag")])
 
 # outer join the cases/coeliacs to the covariates
 # enables us to get all the controls
-case_covariates <- coeliacs_cases %>%
-  full_join(covariates, by="eid") %>%
-  mutate(coeliac = if_else(is.na(coeliac), 0, coeliac)) %>%
-  mutate(case = if_else(is.na(case), 0, case))
+case_covariates <- covariates %>%
+  left_join(cases, by="eid") %>%
+  left_join(coeliacs, by="eid", suffix=c("_case", "_coeliac")) %>%
+  mutate(case = if_else(is.na(case), 0, case)) %>%
+  mutate(coeliac = if_else(is.na(coeliac), 0, coeliac))
 
 #### Descriptive Statistics
 
