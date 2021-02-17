@@ -43,7 +43,7 @@ get_covariates <- function(covariates_fname, withdrawn_fname, fields) {
   # get the covariate column names
   column_ids <- data.frame(fread(covariates_fname, nrows=1))
   
-  # get the columns ids for cancer only
+  # get the columns ids for the given fields
   column_ids <- extract_column_ids(column_ids, fields)
   
   # Extracting required columns from dataset

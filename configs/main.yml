@@ -71,4 +71,4 @@ risk_factor_output: "../data/risk_factor_cases.rds"
 #### Configs ####
 
 # Set the filename for the list of field ids
-fields_fname: "../configs/field_ids.txt"
+fields_fname: "../configs/covariate_ids.txt"
