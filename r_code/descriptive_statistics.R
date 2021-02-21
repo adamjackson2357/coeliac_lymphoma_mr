@@ -13,7 +13,6 @@ library(tidyverse)
 library(yaml)
 library(tableone)
 library(forestmodel)
-library(forestplot)
 
 source("extraction.R")
 
@@ -68,9 +67,7 @@ case_covariates <- covariates %>%
   mutate(case = if_else(is.na(case), 0, case)) %>%
   mutate(coeliac = if_else(is.na(coeliac), 0, coeliac))
 
-#### Descriptive Statistics
-
-head(case_covariates)
+#### Descriptive Statistics Pre-processing
 
 # rename columns
 old_names <- c("X21022.0.0", "X52.0.0", "X34.0.0", "X31.0.0")
@@ -99,6 +96,14 @@ df$case <- factor(ifelse(df$case == 0, "control", "case"), levels = c("control",
 df$sex <- factor(df$sex)
 df$immuno <- factor(df$immuno)
 
+# save as an RDS file so that we don't always have to run the above
+saveRDS(df, "../data/case_covariates.rds")
+
+## Table One
+
+# read in the case covariates
+df <- readRDS("../data/case_covariates.rds")
+
 # vector of the variable names
 var_names <- c("coeliac", "sex", "age_today", "age_diag_case", "age_diag_coeliac", "immuno")
 
@@ -112,12 +117,23 @@ table1 <- CreateTableOne(vars = var_names,
                             factorVars = cat_vars)
 table1_print <- print(table1, showAllLevels = TRUE,
                       quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
-table1_print
+write.csv(table1_print, "../figures/table1.csv")
 
-# check coeliac immuno compromised cross-tab
-addmargins(table(df$coeliac, df$immuno))
-addmargins(table(df$case, df$immuno))
+## Venn Diagram
 
+# subset participants that are cases, coeliacs or immunocompromised
+overlap <- subset(df, case == "case" | coeliac == 1 | immuno == 1)
+overlap <- overlap[,c("case", "coeliac", "immuno")]
+overlap$case <- as.character(ifelse(overlap$case == 'case', "1", "0"))
+overlap$coeliac <- as.character(ifelse(overlap$coeliac == 1, "1", "0"))
+overlap$immuno <- as.character(ifelse(overlap$immuno == 1, "1", "0"))
+
+overlap_agg <- overlap %>%
+  group_by(case, coeliac, immuno) %>%
+  count() %>%
+  arrange(case, coeliac, immuno)
+
+head(overlap_agg, 10)
 
 #### Logistic regression of coeliacs on cases ####
 
@@ -155,7 +171,7 @@ anova(model3, model4)
 round(cbind(exp(cbind(OR = coef(model4),
                       confint(model4))),
             p_value = summary(model4)$coefficients[,4]), 2)
-forestmodel(model4)
+forest_model(model4)
 
 # add in interaction effects
 model5 <- glm(case~coeliac+sex+age_today+immuno+coeliac:sex, data=df, family=binomial(link="logit"))
