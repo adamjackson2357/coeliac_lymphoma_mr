@@ -1,8 +1,5 @@
 ## Set of functions for extracting data
 
-library(data.table)
-library(tidyverse)
-
 #' Extract the column ids from a list of field ids
 #' 
 #' @param data Dataframe containing all the field_ids, e.g. ukb26390.csv

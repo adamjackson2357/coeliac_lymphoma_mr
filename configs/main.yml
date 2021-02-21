@@ -2,8 +2,12 @@
 
 #### Disease Codes ####
 
-# list of icd10 disease codes that we want use for our cases
-icd10:
+# list of icd10 codes for the exposures
+exposure_codes:
+  - "K900"
+
+# list of icd10 disease codes that we want use for our outcome
+outcome_codes:
   - "C820"
   - "C821"
   - "C822"
@@ -24,14 +28,10 @@ icd10:
   - "C859"
   - "C862"
 
-# list of icd10 codes for the risk factors
-risk_factors:
-  - "K900"
-
 #### Provided Filenames ####
 
 # Set the covariates filename
-covariates_fname: "../data/ukb26390.csv"
+covars_fname: "../data/ukb26390.csv"
 
 # biomarkers filename
 biomarkers_fname: "../data/ukb27725.csv"
@@ -54,19 +54,25 @@ category_codes_fname: "../data/Codings_Showcase.csv"
 # data dictionary
 data_dict_fname: "../data/data_dictionary.csv"
 
-# snp data
-snp_fname: "../data/genetic_data_lung_cancer_snps.rds"
+# genotype data
+genotype_fname: "../data/genetic_data_lung_cancer_snps.rds"
 
 #### Output Filnames ####
 
 # output filename after covariate extraction
-covariates_output: "../data/covariates.rds"
+covars_output: "../data/covariates.rds"
 
-# output filename after cases extraction
-cases_output: "../data/cases.rds"
+# output filename for exposures extraction
+exposure_output: "../data/exposure.rds"
 
-# output filename for risk factor extraction
-risk_factor_output: "../data/risk_factor_cases.rds"
+# output filename after outcome extraction
+outcome_output: "../data/outcome.rds"
+
+# output filename after joining cases and covariates
+case_covars_output: "../data/case_covars.rds"
+
+# output filename for the prs code
+prs_output: "../data/lung_cancer_prs.rds"
 
 #### Configs ####
 

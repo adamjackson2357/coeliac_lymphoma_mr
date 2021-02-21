@@ -3,9 +3,9 @@
 # Clear variables and set the path
 dev.off()
 rm(list=ls())
-path=dirname(rstudioapi::getActiveDocumentContext()$path)
-setwd(path)
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
+# import libraries
 library(data.table)
 source("extraction.R")
 
