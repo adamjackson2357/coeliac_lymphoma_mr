@@ -72,7 +72,7 @@ outcome_output: "../data/outcome.rds"
 case_covars_output: "../data/case_covars.rds"
 
 # output filename for the prs code
-prs_output: "../data/lung_cancer_prs.rds"
+rs_output: "../data/lung_cancer_rs.rds"
 
 #### Configs ####
 

@@ -1,4 +1,4 @@
-# Run PRS
+# Create the risk scores for each snp-eid combination
 
 # Clear variables and set the path
 dev.off()
@@ -11,7 +11,7 @@ library(yaml)
 # read in the config
 config <- read_yaml('../configs/main.yml')
 genotype_fname <- config$genotype_fname
-prs_output <- config$prs_output
+rs_output <- config$rs_output
 
 ## Read in the data
 
@@ -32,7 +32,7 @@ for (i in 1:length(snps)) {geno[, snps[i]] <- as.numeric(geno[, snps[i]])}
 # convert to a matrix
 geno <- as.matrix(geno)
 
-## PRS Re-coding
+## Genotype Re-coding
 
 # convert all 0s to NAs
 geno[geno == 0] <- NA
@@ -52,17 +52,14 @@ pre_process <- function(x, risk_allele) {
 # apply to each column
 for (i in 1: length(snps)) {geno[, i] <- pre_process(geno[,i], risk_allele[i])}
 
-## PRS Imputation
+## Imputation
 
-# Need to impute the missing data
+# Should we impute the missing data
 
-## Create the PRS
+## Create the risk score
 
 # multiply each SNP by the odds ratio to get the risk for that snp
 rs <- t(t(geno) * or)
 
-# take the rowwise sum as the risk score for each eid
-prs <- rowSums(rs)
-
 # save as an rds
-saveRDS(prs, prs_output)
+saveRDS(rs, rs_output)

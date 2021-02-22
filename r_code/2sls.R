@@ -11,13 +11,18 @@ library(ROCR)
 
 # read in the config
 config <- read_yaml('../configs/main.yml')
-prs_output <- config$prs_output
+rs_output <- config$rs_output
 case_covars_output <- config$case_covars_output
 
-## Read in the PRS and join with covariates
+## Read in the risk scores and create prs
 
 # read in the PRS Data
-prs <- readRDS(prs_output)
+rs <- readRDS(rs_output)
+
+# take the rowwise sum as the risk score for each eid
+prs <- rowSums(rs)
+
+## Join with covariates
 
 # join the case-covariates dataframe
 case_covars <- readRDS(case_covars_output)
