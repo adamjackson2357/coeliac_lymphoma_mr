@@ -8,27 +8,22 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 # read in libraries
 library(yaml)
 library(ROCR)
+library(AER)
 
 # read in the config
 config <- read_yaml('../configs/main.yml')
-rs_output <- config$rs_output
 case_covars_output <- config$case_covars_output
+prs_output <- config$prs_output
 
 ## Read in the risk scores and create prs
 
-# read in the PRS Data
-rs <- readRDS(rs_output)
-
-# take the rowwise sum as the risk score for each eid
-prs <- rowSums(rs)
-
-## Join with covariates
-
-# join the case-covariates dataframe
+# join the data
 case_covars <- readRDS(case_covars_output)
+prs <- readRDS(prs_output)
 
 # join the prs to the covariates dataframe
 case_covars$prs <- prs[match(case_covars$eid, names(prs))]
+head(case_covars)
 
 # check number of missing values
 length(case_covars$prs)
@@ -56,14 +51,20 @@ exposure_rocr <- prediction(exposure_pred, case_covars$exposure, label.ordering 
 
 # ROC Curve
 exposure_roc <- performance(exposure_rocr, measure="tpr", x.measure="fpr")
-plot(exposure_roc)
+plot(exposure_roc, main = "coeliac ~ prs ROC")
 abline(a=0, b=1)
 
 # get the auc
 exposure_auc= performance(exposure_rocr, measure = "auc")
 exposure_auc@y.values
 
-## Regress the exposure predictions against lymphoma
+# McFadden's R-squared
+
+# Deviance
+null_reg <- glm(exposure~1, data = case_covars, family = binomial(link = "logit"))
+anova(null_reg, exposure_reg)
+
+## 2SLS using exposure predictions
 
 # convert to factor
 case_covars$outcome <- as.factor(case_covars$outcome)
@@ -72,17 +73,13 @@ case_covars$outcome <- as.factor(case_covars$outcome)
 outcome_reg <- glm(outcome~exposure_pred, data = case_covars, family = binomial(link = "logit"))
 summary(outcome_reg)
 
-# predict on exposure
-outcome_pred <- predict(outcome_reg, case_covars, type = "response")
+## 2SLS using ivreg
 
-# create the ROCR object
-outcome_rocr <- prediction(outcome_pred, case_covars$outcome, label.ordering = NULL)
+# for only exposure
+head(case_covars)
+tsls <- ivreg(outcome~exposure | prs, data = case_covars)
+summary(tsls)
 
-# ROC Curve
-outcome_roc <- performance(outcome_rocr, measure="tpr", x.measure="fpr")
-plot(outcome_roc)
-abline(a=0, b=1)
-
-# get the auc
-outcome_auc = performance(outcome_rocr, measure = "auc")
-outcome_auc@y.values
+# including covariates
+sls_covars <- ivreg(outcome~exposure + sex + age + immuno | prs, data = case_covars)
+summary(sls_covars)

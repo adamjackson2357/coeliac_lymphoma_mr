@@ -7,59 +7,72 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # read in libraries
 library(yaml)
+library(ggplot2)
 
 # read in the config
 config <- read_yaml('../configs/main.yml')
 genotype_fname <- config$genotype_fname
-rs_output <- config$rs_output
+ivs_output <- config$ivs_output
+prs_output <- config$prs_output
 
 ## Read in the data
 
-# read in the snp data
+# read in the data
 geno <- readRDS(genotype_fname)
+ivs <- readRDS(ivs_output)
 
-# select snps
-snps <- c("rs7705526",  "rs6920364",  "rs11780471", "rs4236709")
-or <- c(0.5, 1.5, 1, 2)
-risk_allele <- c("minor", "minor", "major", "major")
+# re-order the genotype data
+geno <- geno[, ivs$rsid]
 
-# subset the genotype data to only the snps of interest
-geno <- geno[, snps]
-
-# convert fom raw to numeric
-for (i in 1:length(snps)) {geno[, snps[i]] <- as.numeric(geno[, snps[i]])}
-
-# convert to a matrix
-geno <- as.matrix(geno)
-
-## Genotype Re-coding
+# convert to a numeric matrix while preserving the eids
+eids <- rownames(geno)
+geno <- as.matrix(sapply(geno, as.numeric))
+rownames(geno) <- eids
 
 # convert all 0s to NAs
 geno[geno == 0] <- NA
 
-# if it's a minor allele then convert 3 to 0
-# if it's a major allele then convert 3 to 1, and 1 to 0
-pre_process <- function(x, risk_allele) {
-  if (risk_allele == "minor"){
-    x[x == 3] <- 0
-  } else {
-    x[x == 1] <- 0
-    x[x == 3] <- 1
-  }
-  return(x)
-}
+# convert to minor homozygote to 2
+# the heterozygote to 1
+# and the major homozygote to 0
+recode_alleles <- function(x) {abs(x - 3)}
 
-# apply to each column
-for (i in 1: length(snps)) {geno[, i] <- pre_process(geno[,i], risk_allele[i])}
+# demonstrate
+x <- c(1, 2, 3)
+recode_alleles(x)
 
-## Imputation
+# apply to the geno dataset
+geno <- apply(geno, MARGIN = 2, FUN = recode_alleles)
 
-# Should we impute the missing data
+# multiply each SNP by the log odds ratio
+rs <- t(t(geno) * log(ivs$OR))
+head(rs)
 
-## Create the risk score
-
-# multiply each SNP by the odds ratio to get the risk for that snp
-rs <- t(t(geno) * or)
+# additive sum and exponentiate to get the prs
+prs <- exp(rowSums(rs, na.rm = TRUE))
 
 # save as an rds
-saveRDS(rs, rs_output)
+saveRDS(prs, prs_output)
+
+## MISSING DATA
+
+# check missing data by column
+missing_cols <- apply(geno, MARGIN = 2, FUN = function(y) sum(length(which(is.na(y)))))
+barplot(missing_cols)
+
+# how many rows would we have if we only took complete data
+geno_count <- nrow(geno)
+complete_count <- nrow(na.omit(geno))
+null_count <- geno_count - complete_count
+null_count
+
+# check the missing data by row
+missing_rows <- apply(geno, MARGIN = 1, FUN = function(y) sum(length(which(is.na(y)))))
+missing_rows <- missing_rows[missing_rows != 0]
+length(missing_rows)
+hist(missing_rows)
+table(missing_rows)
+
+# Should we impute the missing data?
+# Or take the average?
+

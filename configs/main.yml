@@ -1,5 +1,10 @@
 ---
 
+#### Exposure and Outcome ####
+
+exposure_name: "coeliac"
+outcome_name: "lymphoma"
+
 #### Disease Codes ####
 
 # list of icd10 codes for the exposures
@@ -55,7 +60,10 @@ category_codes_fname: "../data/Codings_Showcase.csv"
 data_dict_fname: "../data/data_dictionary.csv"
 
 # genotype data
-genotype_fname: "../data/genetic_data_lung_cancer_snps.rds"
+genotype_fname: "../data/genetic_data_extracted.rds"
+
+# GWAS Marquez raw data
+gwas_fname: "../data/Marq.csv"
 
 #### Output Filnames ####
 
@@ -71,8 +79,11 @@ outcome_output: "../data/outcome.rds"
 # output filename after joining cases and covariates
 case_covars_output: "../data/case_covars.rds"
 
+# output filename for the iv extraction code
+ivs_output: "../data/gwas_ivs.rds"
+
 # output filename for the prs code
-rs_output: "../data/lung_cancer_rs.rds"
+prs_output: "../data/coeliac_prs.rds"
 
 #### Configs ####
 

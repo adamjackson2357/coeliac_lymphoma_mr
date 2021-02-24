@@ -24,6 +24,8 @@ case_covars_output <- config$case_covars_output
 hes_diag_fname <- config$hes_diag_fname
 hes_fname <- config$hes_fname
 withdrawn_fname <- config$withdrawn_fname
+exposure_name <- config$exposure_name
+outcome_name <- config$outcome_name
 
 # get the time of first diagnosis
 get_first_diag <- function(df) {
@@ -99,20 +101,20 @@ case_covars <- readRDS(case_covars_output)
 head(case_covars)
 
 # convert to cases and controls
-case_covars$outcome <- factor(ifelse(case_covars$outcome == 0, "no_lymphoma", "lymphoma"), levels = c("no_lymphoma", "lymphoma"))
-case_covars$exposure <- factor(ifelse(case_covars$exposure == 0, "no_coeliac", "coeliac"), levels = c("no_coeliac", "coeliac"))
+case_covars[,outcome_name] <- factor(ifelse(case_covars$outcome == 0, "control", "case"), levels = c("control", "case"))
+case_covars[,exposure_name] <- factor(ifelse(case_covars$exposure == 0, "control", "case"), levels = c("control", "case"))
 case_covars$sex <- factor(ifelse(case_covars$sex == 0, "female", "male"), levels = c("female", "male"))
 case_covars$immuno <- factor(case_covars$immuno)
 
 # vector of the variable names
-var_names <- c("exposure", "sex", "age", "age_diag_exposure", "age_diag_outcome", "immuno")
+var_names <- c(exposure_name, "sex", "age", "age_diag_exposure", "age_diag_outcome", "immuno")
 
 # vector of the categorical variable names
-cat_vars <- c("exposure", "sex", "immuno")
+cat_vars <- c(exposure_name, "sex", "immuno")
 
 # use table one function
 table1 <- CreateTableOne(vars = var_names,
-                            strata = "outcome",
+                            strata = outcome_name,
                             data = case_covars,
                             factorVars = cat_vars)
 table1_print <- print(table1, showAllLevels = TRUE,
