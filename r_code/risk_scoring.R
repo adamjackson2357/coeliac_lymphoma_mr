@@ -7,7 +7,6 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # read in libraries
 library(yaml)
-library(ggplot2)
 
 # read in the config
 config <- read_yaml('../configs/main.yml')
