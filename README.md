@@ -59,7 +59,7 @@ r_packages:
 - ieugwasr
 - EBPRS
 - ROCR
-- AER
+- ivprobit
 
 UK biobank data
 

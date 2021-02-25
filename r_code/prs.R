@@ -44,9 +44,10 @@ recode_alleles(x)
 # apply to the geno dataset
 geno <- apply(geno, MARGIN = 2, FUN = recode_alleles)
 
+head(geno)
+
 # multiply each SNP by the log odds ratio
 rs <- t(t(geno) * log(ivs$OR))
-head(rs)
 
 # additive sum and exponentiate to get the prs
 prs <- exp(rowSums(rs, na.rm = TRUE))
