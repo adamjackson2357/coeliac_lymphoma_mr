@@ -35,10 +35,23 @@ get_first_diag <- function(df) {
     group_by(eid) %>%
     mutate(diag = first(epistart)) %>%
     ungroup() %>%
-    filter(epistart == diag) %>%
+    filter(epistart == diag |is.na(epistart)) %>%
     select(eid, diag_icd10, diag)
   return(df)
 }
+
+#### Get Statistics for each ICD10 code ####
+
+outcome <- readRDS(outcome_output)
+outcome <- unique(outcome[, c("eid", "diag_icd10")])
+outcome %>%
+  group_by(diag_icd10) %>%
+  count()
+
+# count the number of icd10 codes per participant
+num_codes <- table(table(outcome$eid))
+c(num_codes, sum = sum(num_codes))
+
 
 #### Join the exposures, cases and controls ####
 
