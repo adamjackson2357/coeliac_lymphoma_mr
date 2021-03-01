@@ -33,6 +33,14 @@ outcome_codes:
   - "C859"
   - "C862"
 
+# GWAS Parameters
+
+# set the p-value threshold for extracting gwas data
+p_threshold: 5*10^-8
+
+# set the clumping threshold for LD
+clump_threshold: 0.001
+
 #### Provided Filenames ####
 
 # Set the covariates filename
@@ -64,6 +72,9 @@ genotype_fname: "../data/genetic_data_extracted.rds"
 
 # GWAS Marquez raw data
 gwas_fname: "../data/Marq.csv"
+
+# gwas principle components filename
+gwas_pcs_fname: "../data/GWAS_PCs.rds"
 
 #### Output Filnames ####
 
