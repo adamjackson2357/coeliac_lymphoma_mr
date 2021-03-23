@@ -6,11 +6,11 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 library(xtable)
 library(ieugwasr)
 library(dplyr)
-source("prs.R")
+source("../2sample_individual/prs.R")
 
-variants <- read.csv("../data/Marq.csv")
+variants <- read.csv("../../data/Marq.csv")
 head(variants)
-ivs <- get_ivs("../data/Marq.csv", 5*10^-8, 0.001)
+ivs <- get_ivs("../../data/Marq.csv", 5*10^-8, 0.001)
 head(ivs)
 
 ivs$EA <- ivs$MA
@@ -26,4 +26,4 @@ head(ivs)
 print(xtable(ivs, type = "latex", digits = 3, display=c("s","s","s", "s","s","g","s")),
       include.rownames=FALSE,
       math.style.exponents = TRUE,
-      file = "../figures/instrument_variables.tex")
+      file = "../../figures/instrument_variables.tex")
