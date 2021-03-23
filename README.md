@@ -17,36 +17,6 @@ conda env create configs/mr_env.yml
 source activate mr_env
 ```
 
-## Project Structure
-
-```bash
-├── configs
-│   ├── field_ids.txt
-│   ├── main.yml
-│   └── README.md
-├── data
-├── documentation
-│   ├── README_original.txt
-│   └── workflow.md
-├── r_code
-│   ├── cases_extraction.R
-│   ├── covariate_extraction.R
-│   ├── data_exploration.R
-│   ├── example_extraction
-│   │   ├── List_field_ids_to_extract.txt
-│   │   └── script_covariates_extraction.R
-│   ├── function_example.R
-│   ├── getting_started.R
-│   ├── README.md
-│   └── recoding_disease.R
-└── README.md
-```
-
-To create this tree, navigate in the terminal to the project root and type `tree`
-Copy and paste the output into within the pairs of triple backticks.
-This will change quite a lot and is worth updating as we add new files
-Files in the /data directory shouldn't be uploaded to git
-
 ## Prerequisites
 
 r_packages:
@@ -54,22 +24,37 @@ r_packages:
 - yaml
 - data.table
 - tidyverse
-- tableone -
+- tableone
 - forestmodel
 - ieugwasr
 - EBPRS
 - ROCR
-- ivprobit
 
-UK biobank data
+The following UK biobank files placed in the data folder
+- "./data/ukb26390.csv"
+- "./data/w19266_20200204.csv"
+- "./data/hesin_diag.txt"
+- "./data/hesin.txt"
+- "./data/genetic_data_extracted.rds"
+- "./data/GWAS_PCs.rds"
 
 ## Documentation
 
 The documentation for this project is this README.
 
-See `/documentation/workflow.md` for the proposed workflow of different scripts to run
+## Analysis
 
-See `/documentation/README_original.txt` for the recommended steps on getting started.
+Observational Analysis
+- Codes to create the descriptive statistics and measure association between coeliac disease and NHL
+
+Two Sample Individual MR
+- Codes to create the PRS and then run the two-stage least squares analysis
+
+Two Sample Summary MR
+- Codes to run the two sample summary MR analysis
+
+GWAS
+- Codes to run the GWAS
 
 ## Support team
 

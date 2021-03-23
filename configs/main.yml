@@ -44,59 +44,44 @@ clump_threshold: 0.001
 #### Provided Filenames ####
 
 # Set the covariates filename
-covars_fname: "../data/ukb26390.csv"
-
-# biomarkers filename
-biomarkers_fname: "../data/ukb27725.csv"
+covars_fname: "../../data/ukb26390.csv"
 
 # Set the filename for the withdrawn participants
-withdrawn_fname: "../data/w19266_20200204.csv"
+withdrawn_fname: "../../data/w19266_20200204.csv"
 
 # hospital episode statistics fname
-hes_diag_fname: "../data/hesin_diag.txt"
+hes_diag_fname: "../../data/hesin_diag.txt"
 
 # hospital episode statistics fname
-hes_fname: "../data/hesin.txt"
-
-# biomarkers annotation filename
-annotation_fname: "../data/Biomarker_annotation.xlsx"
-
-# category codes from the codings showcase
-category_codes_fname: "../data/Codings_Showcase.csv"
-
-# data dictionary
-data_dict_fname: "../data/data_dictionary.csv"
+hes_fname: "../../data/hesin.txt"
 
 # genotype data
-genotype_fname: "../data/genetic_data_extracted.rds"
+genotype_fname: "../../data/genetic_data_extracted.rds"
 
 # GWAS Marquez raw data
-gwas_fname: "../data/Marq.csv"
+gwas_fname: "../../data/Marq.csv"
 
 # gwas principle components filename
-gwas_pcs_fname: "../data/GWAS_PCs.rds"
+gwas_pcs_fname: "../../data/GWAS_PCs.rds"
 
 #### Output Filnames ####
 
 # output filename after covariate extraction
-covars_output: "../data/covariates.rds"
+covars_output: "../../data/covariates.rds"
 
 # output filename for exposures extraction
-exposure_output: "../data/exposure.rds"
+exposure_output: "../../data/exposure.rds"
 
 # output filename after outcome extraction
-outcome_output: "../data/outcome.rds"
+outcome_output: "../../data/outcome.rds"
 
 # output filename after joining cases and covariates
-case_covars_output: "../data/case_covars.rds"
+case_covars_output: "../../data/case_covars.rds"
 
-# output filename for the iv extraction code
-ivs_output: "../data/gwas_ivs.rds"
-
-# output filename for the prs code
-prs_output: "../data/coeliac_prs.rds"
+# formatted case covars output
+case_covars_formatted: "../../data/case_covars_formatted.rds"
 
 #### Configs ####
 
 # Set the filename for the list of field ids
-fields_fname: "../configs/covariate_ids.txt"
+fields_fname: "../../configs/covariate_ids.txt"
