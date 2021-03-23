@@ -20,8 +20,8 @@ suppressPackageStartupMessages({
   library(flextable)
 })
 source("../utils/extraction.R")
-source("../2sample_individual/prs.R")
-source("../2sample_individual/model_processing.R")
+source("../two_sample_individual/prs.R")
+source("../two_sample_individual/model_processing.R")
 
 # read in the config
 config <- read_yaml('../../configs/main.yml')
@@ -56,7 +56,8 @@ str(case_covars)
 
 # Coeliac logistic regression
 exposure_reg <- glm(exposure~prs, data = case_covars, family = binomial(link = "logit"))
-exposure_pred <- predict(exposure_reg, type="response", newdata=case_covars)
+exposure_pred <- predict(exposure_reg, type="response")
+hist(exposure_pred)
 exposure_rocr <- prediction(exposure_pred, case_covars$exposure, label.ordering = NULL)
 performance(exposure_rocr, measure = "auc")@y.values
 exposure_roc <- performance(exposure_rocr, measure="tpr", x.measure="fpr")
@@ -91,8 +92,7 @@ ggsave("../../figures/prs_roc.png", prs_roc, width=10, height=5)
 
 case_covars <- readRDS(case_covars_output)
 case_covars <- feature_recoding(case_covars)
-case_covars$Coeliac_Prediction <- exposure_pred
-head(case_covars)
+case_covars$Coeliac_Prediction <- exposure_odds
 
 # get the different function strings
 pc_cols <- names(readRDS(gwas_pcs_fname))[2:11]
