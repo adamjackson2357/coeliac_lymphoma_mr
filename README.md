@@ -29,6 +29,12 @@ r_packages:
 - ieugwasr
 - EBPRS
 - ROCR
+- ggplot2
+- ggpubr
+- xtable
+- patchwork
+- flextable
+- DiagrammeR
 
 The following UK biobank files placed in the data folder
 - "./data/ukb26390.csv"

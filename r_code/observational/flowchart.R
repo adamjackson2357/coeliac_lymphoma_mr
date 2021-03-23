@@ -5,7 +5,6 @@ dev.off()
 rm(list=ls())
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-# install.packages("DiagrammeR")
 library("DiagrammeR")
 
 flowchart <- grViz("digraph flowchart {

@@ -18,7 +18,6 @@ suppressPackageStartupMessages({
   library(xtable)
   library(patchwork)
   library(flextable)
-  library(caret)
 })
 source("../utils/extraction.R")
 source("../2sample_individual/prs.R")
