@@ -10,12 +10,6 @@ non-hodgkins lymphoma.
 ## Quick start
 
 1. Clone the project from [https://github.com/adamjackson2357/coeliac_lymphoma_mr]
-2. Create the mr_env environment
-```
-module load anaconda3/personal
-conda env create configs/mr_env.yml
-source activate mr_env
-```
 
 ## Prerequisites
 
