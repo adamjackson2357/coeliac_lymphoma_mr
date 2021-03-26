@@ -5,6 +5,14 @@ dev.off()
 rm(list=ls())
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
+suppressPackageStartupMessages({
+  library(yaml)
+  library(dplyr)
+  library(ggplot2)
+})
+
+config <- read_yaml('../../configs/main.yml')
+case_covars_output <- config$case_covars_output
 
 case_covars <- readRDS(case_covars_output)
 case_covars$outcome <- ifelse(case_covars$outcome == 1, "NHL", "Control")
