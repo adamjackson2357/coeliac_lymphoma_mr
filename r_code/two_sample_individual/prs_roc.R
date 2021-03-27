@@ -9,15 +9,15 @@
 suppressPackageStartupMessages({
   library(yaml)
   library(dplyr)
-  library(ieugwasr)
-  library(EBPRS)
   library(ROCR)
   library(ggplot2)
+  library(data.table)
   library(ggpubr)
 })
 source("../utils/extraction.R")
 source("../two_sample_individual/prs.R")
 source("../two_sample_individual/model_processing.R")
+source("../two_sample_individual/create_roc.R")
 
 # read in the config
 config <- read_yaml('../../configs/main.yml')
@@ -33,31 +33,6 @@ case_covars_output <- config$case_covars_output
 gwas_pcs_fname <- config$gwas_pcs_fname
 gwas_fname <- config$gwas_fname
 clump_threshold <- config$clump_threshold
-
-## Functions
-
-get_fpr_fnr <- function(case_covars, model, Y, label){
-  
-  pred <- predict(model, type="response")
-  rocr <- prediction(pred, case_covars[,Y], label.ordering = NULL)
-  print(performance(rocr, measure = "auc")@y.values)
-  roc <- performance(rocr, measure="tpr", x.measure="fpr")
-  values = data.frame(fpr=roc@x.values[[1]],
-                      fnr=roc@y.values[[1]])
-  values$Variable <- label
-  return(values)
-}
-
-create_roc_curve <- function(fpr_fnr){
-  prs_roc <- fpr_fnr %>%
-    ggplot(aes(x = fpr, y = fnr, colour=Variable)) +
-    geom_line() +
-    geom_segment(aes(x = 0, y = 0, xend = 1, yend = 1), color = "black") +
-    theme_minimal() +
-    xlim(0, 1) + ylim(0, 1) +
-    xlab("False Positive Rate") + ylab("False Negative Rate")
-  return(prs_roc)
-}
 
 ## Stage 0: Get Data and preprocess
 
@@ -82,7 +57,10 @@ gluten_values <- get_fpr_fnr(case_covars, gluten_reg, 'Gluten_free', "Gluten Fre
 
 # get the exposure prs roc
 exposure_fpr_fnr <- rbind(exposure_values, gluten_values)
+rm(exposure_values)
+rm(gluten_values)
 exposure_roc <- create_roc_curve(exposure_fpr_fnr)
+rm(exposure_fpr_fnr)
 ggsave("../../figures/exposure_roc.png", exposure_roc, width=10, height=5)
 
 ## Stage 2 regress exposure predictions against the outcome
@@ -95,7 +73,7 @@ covars_prs_str <- paste(c(covars_str, "prs"), collapse='+')
 
 # NHL logistic regression
 prs_reg <- glm(outcome~prs, data = case_covars, family = binomial(link = "logit"))
-prs_values <- get_fpr_fnr(case_covars, outcome_reg, 'outcome', 'PRS')
+prs_values <- get_fpr_fnr(case_covars, prs_reg, 'outcome', 'PRS')
 
 # Covars logistic regression
 covars_reg <- glm(as.formula(c(outcome_str, covars_str)), data = case_covars, family = binomial(link = "logit"))
@@ -107,7 +85,11 @@ covars_prs_values <- get_fpr_fnr(case_covars, covars_prs_reg, 'outcome', 'Covara
 
 # get the outcome prs roc
 outcome_fpr_fnr <- rbind(covars_prs_values, covars_values, prs_values)
+rm(prs_values)
+rm(covars_values)
+rm(covars_prs_values)
 outcome_roc <- create_roc_curve(outcome_fpr_fnr)
+rm(outcome_fpr_fnr)
 ggsave("../../figures/outcome_roc.png", outcome_roc, width=10, height=5)
 
 # Print both side by side
