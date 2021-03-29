@@ -21,8 +21,9 @@ suppressPackageStartupMessages({
   library(caret)
 })
 source("../utils/extraction.R")
-source("../2sample_individual/prs.R")
-source("../2sample_individual/model_processing.R")
+source("../two_sample_individual/prs.R")
+source("../two_sample_individual/model_processing.R")
+source("../two_sample_individual/prs_visualisation.R")
 
 # read in the config
 config <- read_yaml('../../configs/main.yml')
@@ -56,24 +57,57 @@ case_covars <- special_diets(case_covars, covars_fname, withdrawn_fname)
 
 saveRDS(case_covars, case_covars_formatted)
 
-## Stage 0.1: PRS analysis
+### PRS Histograms
 
 case_covars <- readRDS(case_covars_formatted)
+case_covars[,"special_diet"] <- ifelse(case_covars$Gluten_free == 1, "Gluten Free", "Not Gluten Free")
 
-# get the legend labels for the histogram
-prs_legend_labels <- rbind(
-  paste0("Not Diagnosed (n=", count(subset(case_covars, Coeliac == "Not Diagnosed")), ")"),
-  paste0("Diagnosed (n=", count(subset(case_covars, Coeliac == "Diagnosed")), ")"))
+coeliac_hist <- create_hist(case_covars, "Coeliac", "Coeliac")
+gluten_hist <- create_hist(case_covars, "special_diet","Special Diet")
+nhl_hist <- create_hist(case_covars, "NHL", "NHL")
 
-# run the histogram
-prs_hist <- case_covars %>%
-  ggplot(aes(x=PRS, colour=Coeliac)) +
-  geom_density() +
-  theme_minimal() +
-  scale_color_manual(labels = prs_legend_labels, values=c("#F8766D", "#00BFC4")) +
-  ylab("Density")
-prs_hist
-ggsave("../../figures/prs_hist.png", prs_hist, width=10, height=5)
+# Print both side by side
+histograms <- ggarrange(
+  coeliac_hist, gluten_hist, nhl_hist,ncol=1, nrow=3,
+  common.legend = FALSE)
+
+### PRS ROC Curves
+
+## Stage 1: Regress prs against exposure
+case_covars <- readRDS(case_covars_output)
+case_covars <- gluten_free(case_covars, covars_fname, withdrawn_fname)
+
+# Coeliac logistic regression
+exposure_reg <- glm(exposure~prs, data = case_covars, family = binomial(link = "logit"))
+exposure_roc <- create_roc_curve(case_covars, exposure_reg, "exposure", "Coeliac")
+exposure_prec_rec <- create_prec_rec_curve(case_covars, exposure_reg, "exposure", "Coeliac")
+
+# Gluten free logistic regression
+gluten_reg <- glm(Gluten_free~prs, data = case_covars, family = binomial(link = "logit"))
+gluten_roc <- create_roc_curve(case_covars, gluten_reg, "Gluten_free", "Gluten Free")
+gluten_prec_rec <- create_prec_rec_curve(case_covars, gluten_reg, "Gluten_free", "Gluten Free")
+
+# NHL logistic regression
+outcome_reg <- glm(outcome~prs, data = case_covars, family = binomial(link = "logit"))
+outcome_roc <- create_roc_curve(case_covars, outcome_reg, "outcome", "NHL")
+outcome_prec_rec <- create_prec_rec_curve(case_covars, outcome_reg, "outcome", "NHL")
+
+rocs <- ggarrange(
+  exposure_roc, gluten_roc, outcome_roc,ncol=1, nrow=3,
+  common.legend = FALSE)
+prec_recs <- ggarrange(
+  exposure_prec_rec, gluten_prec_rec, outcome_prec_rec, ncol=1, nrow=3,
+  common.legend = FALSE)
+
+## Save all the prs plots
+
+prs_plots <- ggarrange(
+  histograms, rocs, prec_recs, ncol=3, nrow=1,
+  common.legend = FALSE)
+ggsave("../../figures/prs_plots.png", prs_plots, width=13, height=11)
+
+
+### PRS Table
 
 prs_melt <- as.data.table(case_covars) %>%
   mutate(Cohort = "Cohort") %>%

@@ -61,7 +61,7 @@ rm(exposure_values)
 rm(gluten_values)
 exposure_roc <- create_roc_curve(exposure_fpr_fnr)
 rm(exposure_fpr_fnr)
-ggsave("../../figures/exposure_roc.png", exposure_roc, width=10, height=5)
+# ggsave("../../figures/exposure_roc.png", exposure_roc, width=10, height=5)
 
 ## Stage 2 regress exposure predictions against the outcome
 
@@ -90,11 +90,11 @@ rm(covars_values)
 rm(covars_prs_values)
 outcome_roc <- create_roc_curve(outcome_fpr_fnr)
 rm(outcome_fpr_fnr)
-ggsave("../../figures/outcome_roc.png", outcome_roc, width=10, height=5)
+# ggsave("../../figures/outcome_roc.png", outcome_roc, width=10, height=5)
 
 # Print both side by side
 rocs <- ggarrange(
   exposure_roc, outcome_roc, ncol=2, nrow=1,
   common.legend = FALSE, legend = "bottom"
 )
-ggsave(plot = rocs, filename="../../figures/rocs.png")
+ggsave(plot = rocs, filename="../../figures/rocs.png", width=15, height=5)
